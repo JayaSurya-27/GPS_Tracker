@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useCallback, memo } from "react";
 import { GoogleMap, useJsApiLoader, Marker } from "@react-google-maps/api";
 
 const containerStyle = {
@@ -18,45 +18,20 @@ const busIconUrl =
 function MyComponent() {
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
-    googleMapsApiKey: "AIzaSyDPWQbcoRWvxocWWkWyxUNXxOuWSuGwTxo",
+    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY || "",
   });
 
-  const [map, setMap] = React.useState(null);
-  const [busPosition, setBusPosition] = React.useState(center);
-
-  const onLoad = React.useCallback(function callback(map) {
-    const bounds = new window.google.maps.LatLngBounds(center);
-    map.fitBounds(bounds);
-    setMap(map);
-  }, []);
-
-  const onUnmount = React.useCallback(function callback(map) {
-    setMap(null);
-  }, []);
-
-  // Function to update bus position
-  //   const updateBusPosition = () => {
-  //     // Simulating bus movement (Replace with actual logic to update bus position)
-  //     const newPosition = {
-  //       lat: busPosition.lat + 0.0001,
-  //       lng: busPosition.lng + 0.0001,
-  //     };
-  //     setBusPosition(newPosition);
-  //   };
-
-  //   React.useEffect(() => {
-  //     // Update bus position every 2 seconds (Adjust timing as needed)
-  //     const interval = setInterval(updateBusPosition, 2000);
-  //     return () => clearInterval(interval);
-  //   }, [busPosition]);
+  const [map, setMap] = useState(null);
+  const [busPosition, setBusPosition] = useState({
+    lat: 15.484284979015744,
+    lng: 74.93466373521942,
+  });
 
   return isLoaded ? (
     <GoogleMap
       mapContainerStyle={containerStyle}
-      center={center}
-      zoom={15}
-      onLoad={onLoad}
-      onUnmount={onUnmount}
+      center={busPosition ? busPosition : center}
+      zoom={17}
     >
       {/* Marker for the bus */}
       <Marker
@@ -74,4 +49,4 @@ function MyComponent() {
   );
 }
 
-export default React.memo(MyComponent);
+export default memo(MyComponent);
