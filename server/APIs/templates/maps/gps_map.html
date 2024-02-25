@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Markers with SVG and Fonts</title>
+    <!-- Load Font Awesome CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Add your custom styles here */
+        #map {
+            height: 700px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+
+<script>
+    function initMap() {
+        const center = { lat: 36.6163, lng: -100.605 };
+        const map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 15,
+            center,
+        });
+
+        // Add markers to the map
+        new google.maps.Marker({
+            position: { lat: 36.6163, lng: -100.61 },
+            map,
+            icon: {
+                path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
+                fillColor: "#0000ff",
+                fillOpacity: 1,
+                anchor: new google.maps.Point(0, 0), // Center of SVG icon
+                strokeWeight: 1,
+                strokeColor: "#ffffff",
+                scale: 8,
+            },
+            title: "Marker 1",
+        });
+
+        new google.maps.Marker({
+            position: { lat: 36.6163, lng: -100.6 },
+            map,
+            label: {
+                text: "\uf041", // Unicode for font-awesome icon
+                fontFamily: "FontAwesome",
+                color: "#ffffff",
+                fontSize: "18px",
+            },
+            title: "Marker 2",
+        });
+    }
+</script>
+
+<!-- Load Google Maps JavaScript API asynchronously with the dynamically loaded API key -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCq87jeLDXm5bGpkWUfB8weMe7Rw0gYAuE&callback=initMap" defer></script>
+</body>
+</html>
