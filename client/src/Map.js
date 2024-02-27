@@ -1,8 +1,8 @@
-import React, { useState, useCallback, useEffect, memo } from "react";
-import { GoogleMap, useJsApiLoader, Marker } from "@react-google-maps/api";
+import React, { useState, useCallback, useEffect, useRef, memo } from "react";
+import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
 
 const containerStyle = {
-  width: "100vh",
+  width: "100vw",
   height: "100vh",
 };
 
@@ -34,25 +34,21 @@ function calculateRotationAngle(prevPosition, newPosition) {
 }
 
 function MyComponent() {
-  const { isLoaded } = useJsApiLoader({
-    id: "google-map-script",
+  const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY || "",
   });
 
-  const [map, setMap] = useState(null);
-  const [busPosition, setBusPosition] = useState({
-    lat: 15.484284979015744,
-    lng: 74.93466373529942,
-  });
+  const [busPosition, setBusPosition] = useState(null);
   const [prevBusPosition, setPrevBusPosition] = useState(null);
   const [rotationAngle, setRotationAngle] = useState(0);
+  const mapRef = useRef(null);
 
   // Update rotation angle when bus position changes
   useEffect(() => {
     const angle = calculateRotationAngle(prevBusPosition, busPosition);
     setRotationAngle(angle);
     setPrevBusPosition(busPosition);
-  }, [busPosition]);
+  }, [busPosition, prevBusPosition]);
 
   // Function to fetch bus location
   const fetchBusLocation = useCallback(async () => {
@@ -75,29 +71,42 @@ function MyComponent() {
   // Fetch bus location initially and then every 10 seconds
   useEffect(() => {
     fetchBusLocation(); // Fetch initially
-    const interval = setInterval(fetchBusLocation, 2000); // Fetch every 10 seconds
+    const interval = setInterval(fetchBusLocation, 600); // Fetch every 10 seconds
     return () => clearInterval(interval); // Cleanup
   }, [fetchBusLocation]);
 
-  return isLoaded ? (
+  // Adjust map center to simulate smooth movement
+  useEffect(() => {
+    if (mapRef.current && busPosition) {
+      mapRef.current.panTo(busPosition);
+    }
+  }, [busPosition]);
+
+  if (loadError) return "Error loading maps";
+  if (!isLoaded) return "Loading Maps...";
+
+  return (
     <GoogleMap
       mapContainerStyle={containerStyle}
-      center={busPosition ? busPosition : center}
+      center={center}
       zoom={17}
+      onLoad={(map) => {
+        mapRef.current = map;
+      }}
     >
-      <Marker
-        position={busPosition}
-        icon={{
-          url: busIconUrl,
-          scaledSize: new window.google.maps.Size(50, 50), // Adjust size as needed
-          origin: new window.google.maps.Point(0, 0),
-          anchor: new window.google.maps.Point(25, 25), // Set anchor to center
-          rotation: rotationAngle, // Set rotation angle
-        }}
-      />
+      {busPosition && (
+        <Marker
+          position={busPosition}
+          icon={{
+            url: busIconUrl,
+            scaledSize: new window.google.maps.Size(50, 50), // Adjust size as needed
+            origin: new window.google.maps.Point(0, 0),
+            anchor: new window.google.maps.Point(25, 25), // Set anchor to center
+            rotation: 180, // Set rotation angle
+          }}
+        />
+      )}
     </GoogleMap>
-  ) : (
-    <></>
   );
 }
 
