@@ -6,8 +6,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
-from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 
 @api_view(['GET'])
@@ -55,20 +55,14 @@ def update_bus_location(request):
             if serializer.is_valid():
                 serializer.save()
 
-                # Send update to WebSocket clients
-                # channel_layer = get_channel_layer()
-                #
-                # async_to_sync(channel_layer.group_send)(
-                #     "bus_updates_group",
-                #     {
-                #         "type": "send_bus_location",
-                #         "bus_location": {
-                #             "latitude": serializer.data['latitude'],
-                #             "longitude": serializer.data['longitude'],
-                #         }
-                #     }
-                # )
-
+                channel_layer = get_channel_layer()
+                async_to_sync(channel_layer.group_send)(
+                    "common_room",
+                    {
+                        'type': 'chat_message',
+                        'message': 'Hello from Django!'
+                    }
+                )
                 return Response({'action': 'Update Bus Location', 'data': serializer.data}, status=status.HTTP_201_CREATED)
 
             return Response({'action': 'Update Bus Location', 'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)

@@ -1,42 +1,64 @@
 import React, { useState, useEffect } from "react";
-import ReactDOM from "react-dom"; // Import from "react-dom"
 
-const WebSocketComponent = () => {
-  const [htmlContent, setHtmlContent] = useState(""); // Initialize htmlContent state
-
-  const API_END_POINT = process.env.API_END_POINT || "localhost:8000/";
+const ChatComponent = () => {
+  const [message, setMessage] = useState("");
+  const [receivedMessages, setReceivedMessages] = useState([]);
+  const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    const socket = new WebSocket(`ws://${API_END_POINT}ws/socket-server/`);
-
-    socket.onopen = () => {
-      console.log("WebSocket connected");
+    // Establish WebSocket connection
+    const newSocket = new WebSocket("ws://localhost:8000/ws/socket-server/");
+    newSocket.onopen = () => {
+      console.log("WebSocket connected!");
+      setSocket(newSocket);
     };
 
-    socket.onerror = (error) => {
+    // Handle incoming messages
+    newSocket.onmessage = (event) => {
+      const messageData = JSON.parse(event.data);
+
+      console.log("Received message:", messageData);
+      setReceivedMessages((prevMessages) => [
+        ...prevMessages,
+        messageData.message,
+      ]);
+    };
+
+    // Handle WebSocket errors
+    newSocket.onerror = (error) => {
       console.error("WebSocket error:", error);
     };
 
-    socket.onclose = () => {
-      console.log("WebSocket closed");
-    };
-
-    socket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      console.log(data.html_content);
-      if (data.type === "html_response") {
-        setHtmlContent(data.html_content); // Set HTML content received from WebSocket
-      }
-    };
-
     return () => {
-      socket.close();
+      newSocket.close();
     };
-  }, [API_END_POINT]);
+  }, []);
+
+  const handleMessageSend = () => {
+    // Send message to WebSocket server
+    if (!message.trim() || !socket) return; // Don't send empty messages or if socket is not initialized
+
+    socket.send(JSON.stringify({ message: message }));
+    setMessage(""); // Clear input field after sending message
+  };
 
   return (
-    <div dangerouslySetInnerHTML={{ __html: htmlContent }}></div> // Render HTML content safely
+    <div>
+      <h2>Chat Room</h2>
+      <div>
+        {receivedMessages.map((msg, index) => (
+          <div key={index}>{msg}</div>
+        ))}
+      </div>
+      <input
+        type="text"
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+        placeholder="Type your message..."
+      />
+      <button onClick={handleMessageSend}>Send</button>
+    </div>
   );
 };
 
-export default WebSocketComponent;
+export default ChatComponent;

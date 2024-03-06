@@ -9,7 +9,7 @@ function App() {
     <div className="App">
       <Router>
         <Routes>
-          <Route path="/" element={<Map />} />
+          <Route path="/" element={<WebSocketComponent />} />
           <Route path="/websocket" element={<WebSocketComponent />} />
           path="/websocket"
         </Routes>
