@@ -50,7 +50,6 @@ def get_latest_bus_location(request, bus_id):
 def update_bus_location(request):
     if request.method == 'POST':
         try:
-            # print(request.data)
             serializer = BusLocationSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
@@ -59,8 +58,14 @@ def update_bus_location(request):
                 async_to_sync(channel_layer.group_send)(
                     "common_room",
                     {
-                        'type': 'chat_message',
-                        'message': 'Hello from Django!'
+                        'type': 'send_coordinates',
+                        'message': 'Hello from Django!',
+                        'latitude': serializer.data['latitude'],
+                        'longitude': serializer.data['longitude'],
+                        'bus_id': serializer.data['bus_id'],
+                        'timestamp': serializer.data['timestamp'],
+
+
                     }
                 )
                 return Response({'action': 'Update Bus Location', 'data': serializer.data}, status=status.HTTP_201_CREATED)
@@ -71,4 +76,3 @@ def update_bus_location(request):
             return Response({'action': 'Update Bus Location', 'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     return Response({'error': 'Invalid request method.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
-

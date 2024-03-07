@@ -21,6 +21,7 @@ const ChatComponent = () => {
       setReceivedMessages((prevMessages) => [
         ...prevMessages,
         messageData.message,
+        `Latitude: ${messageData.latitude}, Longitude: ${messageData.longitude}`, // Include latitude and longitude in the received message
       ]);
     };
 
