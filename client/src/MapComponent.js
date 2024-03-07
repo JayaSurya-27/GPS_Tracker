@@ -23,7 +23,7 @@ const MapComponent = ({ busPosition }) => {
   const mapRef = useRef(null);
 
   useEffect(() => {
-    if (mapRef.current && busPosition) {
+    if (mapRef.current && busPosition) { 
       mapRef.current.panTo(busPosition);
     }
   }, [busPosition]);
@@ -38,11 +38,12 @@ const MapComponent = ({ busPosition }) => {
       mapContainerStyle={containerStyle}
       center={center}
       zoom={17}
-      onLoad={(map) => {
-        mapRef.current = map;
-      }}
+      //   onLoad={(map) => {
+      //     mapRef.current = map;
+      //   }}
     >
-      <Marker position={busPosition} />
+      <Marker position={{ lat: 15.484819, lng: 74.939076 }} />{" "}
+      {/* Fixed latitude and longitude */}
     </GoogleMap>
   );
 };

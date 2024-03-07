@@ -1,52 +1,89 @@
-import React, { useState, useEffect } from "react";
-import MapComponent from "./MapComponent";
+import React, { useState, useEffect, useRef } from "react";
+import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
 
-const ChatComponent = () => {
-  const [message, setMessage] = useState("");
-  const [receivedMessages, setReceivedMessages] = useState([]);
-  const [socket, setSocket] = useState(null);
-  const [coordinates, setCoordinates] = useState(useState(null));
-
-  useEffect(() => {
-    // Establish WebSocket connection
-    const newSocket = new WebSocket("ws://localhost:8000/ws/socket-server/");
-    newSocket.onopen = () => {
-      console.log("WebSocket connected!");
-      setSocket(newSocket);
-    };
-
-    // Handle incoming messages
-    newSocket.onmessage = (event) => {
-      const messageData = JSON.parse(event.data);
-
-      console.log("Received message:", messageData);
-      setCoordinates({ lat: messageData.latitude, lng: messageData.longitude });
-      setReceivedMessages((prevMessages) => [
-        ...prevMessages,
-        messageData.message,
-        `Latitude: ${messageData.latitude}, Longitude: ${messageData.longitude}`, // Include latitude and longitude in the received message
-      ]);
-    };
-
-    // Handle WebSocket errors
-    newSocket.onerror = (error) => {
-      console.error("WebSocket error:", error);
-    };
-
-    return () => {
-      newSocket.close();
-    };
-  }, []);
-
-  const handleMessageSend = () => {
-    // Send message to WebSocket server
-    if (!message.trim() || !socket) return; // Don't send empty messages or if socket is not initialized
-
-    socket.send(JSON.stringify({ message: message }));
-    setMessage(""); // Clear input field after sending message
-  };
-
-  return <MapComponent busPosition={coordinates} />;
+const containerStyle = {
+  width: "100vw",
+  height: "100vh",
 };
 
-export default ChatComponent;
+const center = {
+  lat: 15.484819,
+  lng: 74.939076,
+};
+
+const busIconUrl =
+  "https://images.vexels.com/media/users/3/154573/isolated/preview/bd08e000a449288c914d851cb9dae110-hatchback-car-top-view-silhouette-by-vexels.png";
+
+const WebSocketComponent = () => {
+  const { isLoaded, loadError } = useLoadScript({
+    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY || "",
+    // Add other options for async loading as needed
+  });
+
+  const mapRef = useRef(null);
+  const [busPosition, setBusPosition] = useState(null);
+  const webSocket = useRef(null);
+
+  useEffect(() => {
+    if (isLoaded && !webSocket.current) {
+      webSocket.current = new WebSocket(
+        "ws://localhost:8000/ws/socket-server/"
+      );
+
+      webSocket.current.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        console.log("WebSocket message received:", data);
+        setBusPosition({
+          lat: data.latitude,
+          lng: data.longitude,
+        });
+      };
+
+      webSocket.current.onclose = () => {
+        console.log("WebSocket connection closed");
+      };
+
+      webSocket.current.onerror = (error) => {
+        console.error("WebSocket error: ", error);
+      };
+    }
+
+    return () => {
+      if (webSocket.current) {
+        webSocket.current.close();
+      }
+    };
+  }, [isLoaded]);
+
+  useEffect(() => {
+    if (mapRef.current && busPosition) {
+      mapRef.current.panTo(busPosition);
+    }
+  }, [busPosition]);
+
+  if (loadError) return <div>Error loading maps</div>;
+  if (!isLoaded) return <div>Loading Maps</div>;
+
+  return (
+    <GoogleMap
+      mapContainerStyle={containerStyle}
+      center={center}
+      zoom={17}
+      onLoad={(map) => {
+        mapRef.current = map;
+      }}
+    >
+      {busPosition && (
+        <Marker
+          position={busPosition}
+          icon={{
+            url: busIconUrl,
+            scaledSize: new window.google.maps.Size(50, 50),
+          }}
+        />
+      )}
+    </GoogleMap>
+  );
+};
+
+export default WebSocketComponent;
