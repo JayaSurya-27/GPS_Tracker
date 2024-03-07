@@ -11,7 +11,6 @@ function App() {
         <Routes>
           <Route path="/" element={<WebSocketComponent />} />
           <Route path="/websocket" element={<WebSocketComponent />} />
-          path="/websocket"
         </Routes>
       </Router>
     </div>

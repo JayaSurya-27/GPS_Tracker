@@ -15,24 +15,6 @@ const center = {
 const busIconUrl =
   "https://images.vexels.com/media/users/3/154573/isolated/preview/bd08e000a449288c914d851cb9dae110-hatchback-car-top-view-silhouette-by-vexels.png";
 
-function calculateRotationAngle(prevPosition, newPosition) {
-  if (!prevPosition || !newPosition) return 0;
-
-  const lat1 = prevPosition.lat;
-  const lon1 = prevPosition.lng;
-  const lat2 = newPosition.lat;
-  const lon2 = newPosition.lng;
-
-  const dLon = lon2 - lon1;
-  const y = Math.sin(dLon) * Math.cos(lat2);
-  const x =
-    Math.cos(lat1) * Math.sin(lat2) -
-    Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
-  const brng = Math.atan2(y, x);
-  const angle = (brng * 180) / Math.PI;
-  return angle;
-}
-
 function MyComponent() {
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY || "",
@@ -42,13 +24,6 @@ function MyComponent() {
   const [prevBusPosition, setPrevBusPosition] = useState(null);
   const [rotationAngle, setRotationAngle] = useState(0);
   const mapRef = useRef(null);
-
-  // Update rotation angle when bus position changes
-  useEffect(() => {
-    const angle = calculateRotationAngle(prevBusPosition, busPosition);
-    setRotationAngle(angle);
-    setPrevBusPosition(busPosition);
-  }, [busPosition, prevBusPosition]);
 
   // Function to fetch bus location
   const fetchBusLocation = useCallback(async () => {

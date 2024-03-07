@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from "react";
+import MapComponent from "./MapComponent";
 
 const ChatComponent = () => {
   const [message, setMessage] = useState("");
   const [receivedMessages, setReceivedMessages] = useState([]);
   const [socket, setSocket] = useState(null);
+  const [coordinates, setCoordinates] = useState({
+    lat: 15.484819,
+    lng: 74.939076,
+  });
 
   useEffect(() => {
     // Establish WebSocket connection
@@ -18,6 +23,7 @@ const ChatComponent = () => {
       const messageData = JSON.parse(event.data);
 
       console.log("Received message:", messageData);
+      setCoordinates({ lat: messageData.latitude, lng: messageData.longitude });
       setReceivedMessages((prevMessages) => [
         ...prevMessages,
         messageData.message,
@@ -43,23 +49,7 @@ const ChatComponent = () => {
     setMessage(""); // Clear input field after sending message
   };
 
-  return (
-    <div>
-      <h2>Chat Room</h2>
-      <div>
-        {receivedMessages.map((msg, index) => (
-          <div key={index}>{msg}</div>
-        ))}
-      </div>
-      <input
-        type="text"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        placeholder="Type your message..."
-      />
-      <button onClick={handleMessageSend}>Send</button>
-    </div>
-  );
+  return <MapComponent busPosition={coordinates} />;
 };
 
 export default ChatComponent;
