@@ -60,9 +60,11 @@ def update_bus_location(request):
                     "common_room",
                     {
                         'type': 'chat_message',
-                        'message': 'Hello from Django!'
+                        'latitude': serializer.data['latitude'],
+                        'longitude': serializer.data['longitude'],
                     }
                 )
+                print('hello')
                 return Response({'action': 'Update Bus Location', 'data': serializer.data}, status=status.HTTP_201_CREATED)
 
             return Response({'action': 'Update Bus Location', 'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
