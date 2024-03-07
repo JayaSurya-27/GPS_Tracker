@@ -42,18 +42,7 @@ const MapComponent = ({ busPosition }) => {
         mapRef.current = map;
       }}
     >
-      {busPosition && (
-        <Marker
-          position={busPosition}
-          icon={{
-            url: busIconUrl,
-            scaledSize: new window.google.maps.Size(50, 50),
-            origin: new window.google.maps.Point(0, 0),
-            anchor: new window.google.maps.Point(25, 25),
-            rotation: 180,
-          }}
-        />
-      )}
+      <Marker position={busPosition} />
     </GoogleMap>
   );
 };

@@ -5,10 +5,7 @@ const ChatComponent = () => {
   const [message, setMessage] = useState("");
   const [receivedMessages, setReceivedMessages] = useState([]);
   const [socket, setSocket] = useState(null);
-  const [coordinates, setCoordinates] = useState({
-    lat: 15.484819,
-    lng: 74.939076,
-  });
+  const [coordinates, setCoordinates] = useState(useState(null));
 
   useEffect(() => {
     // Establish WebSocket connection

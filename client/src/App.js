@@ -4,6 +4,7 @@ import LocationTracker from "./nav.js";
 import WebSocketComponent from "./WebSocketComponent.js";
 import Map from "./Map.js";
 
+
 function App() {
   return (
     <div className="App">
