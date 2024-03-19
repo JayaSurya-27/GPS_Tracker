@@ -6,7 +6,7 @@ const containerStyle = {
   height: "100vh",
 };
 
-const center = {
+const defaultCenter = {
   lat: 15.484819,
   lng: 74.939076,
 };
@@ -67,7 +67,7 @@ const WebSocketComponent = () => {
   return (
     <GoogleMap
       mapContainerStyle={containerStyle}
-      center={center}
+      center={defaultCenter}
       zoom={17}
       onLoad={(map) => {
         mapRef.current = map;
