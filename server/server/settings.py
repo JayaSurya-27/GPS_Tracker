@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'import_export',
     'rest_framework_simplejwt',
     'rest_framework',
+    'channels',
     'simple_history',
     'daphne',
     'django.contrib.admin',
@@ -75,12 +76,9 @@ ASGI_APPLICATION = "server.asgi.application"
 GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
 
 CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            'hosts': [('localhost', 6379)],  # Default Redis port is 6379
-        },
-    },
+    'default':{
+        'BACKEND':'channels.layers.InMemoryChannelLayer'
+    }
 }
 
 # Database

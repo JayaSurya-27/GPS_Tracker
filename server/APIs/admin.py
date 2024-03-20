@@ -24,5 +24,11 @@ class BusAdmin(ImportExportMixin, SimpleHistoryAdmin):
 
 admin.site.register(Bus, BusAdmin)
 
+class ScheduleAdmin(ImportExportMixin, SimpleHistoryAdmin):
+    list_display = ('day_id', 'bus_id', 'from_location', 'to_location', 'start_time', 'end_time')
+    list_filter = ('bus_id', 'from_location', 'to_location')
+    search_fields = ('bus_id', 'from_location', 'to_location')
+    ordering = ('bus_id', 'start_time', 'end_time')
 
+admin.site.register(Schedule, ScheduleAdmin)
 
