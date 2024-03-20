@@ -13,4 +13,9 @@ class BusSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'password']
 
 
+class ScheduleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Schedule
+        fields = ['id', 'day_id', 'bus_id', 'from_location', 'to_location', 'start_time', 'end_time']
+
 

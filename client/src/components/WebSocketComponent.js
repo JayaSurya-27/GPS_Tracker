@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
+import busIconUrl from "./../static/gps.png";
 
 const containerStyle = {
   width: "100vw",
@@ -11,8 +12,7 @@ const defaultCenter = {
   lng: 74.939076,
 };
 
-const busIconUrl =
-  "https://images.vexels.com/media/users/3/154573/isolated/preview/bd08e000a449288c914d851cb9dae110-hatchback-car-top-view-silhouette-by-vexels.png";
+// const busIconUrl = "./../public/gps.png";
 
 const WebSocketComponent = () => {
   const { isLoaded, loadError } = useLoadScript({

@@ -11,8 +11,10 @@ const center = {
   lng: 74.939076,
 };
 
-const busIconUrl =
-  "https://images.vexels.com/media/users/3/154573/isolated/preview/bd08e000a449288c914d851cb9dae110-hatchback-car-top-view-silhouette-by-vexels.png";
+// const busIconUrl =
+//   "https://images.vexels.com/media/users/3/154573/isolated/preview/bd08e000a449288c914d851cb9dae110-hatchback-car-top-view-silhouette-by-vexels.png";
+
+const busIconUrl = "./../public/gps.png";
 
 const MapComponent = ({ busPosition }) => {
   console.log(busPosition);
