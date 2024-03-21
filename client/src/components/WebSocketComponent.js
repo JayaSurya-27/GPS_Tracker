@@ -12,11 +12,13 @@ const defaultCenter = {
   lng: 74.939076,
 };
 
+const API_END_POINT = process.env.API_END_POINT;
+
 // const busIconUrl = "./../public/gps.png";
 
 const WebSocketComponent = () => {
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY || "",
+    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
     // Add other options for async loading as needed
   });
 
@@ -27,7 +29,7 @@ const WebSocketComponent = () => {
   useEffect(() => {
     if (isLoaded && !webSocket.current) {
       webSocket.current = new WebSocket(
-        "ws://localhost:8000/ws/socket-server/"
+        `ws://${API_END_POINT}ws/socket-server/`
       );
 
       webSocket.current.onmessage = (event) => {
