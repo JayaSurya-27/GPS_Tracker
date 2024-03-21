@@ -29,7 +29,7 @@ const WebSocketComponent = () => {
   useEffect(() => {
     if (isLoaded && !webSocket.current) {
       webSocket.current = new WebSocket(
-        `ws://${API_END_POINT}ws/socket-server/`
+        `wss://${API_END_POINT}ws/socket-server/`
       );
 
       webSocket.current.onmessage = (event) => {
