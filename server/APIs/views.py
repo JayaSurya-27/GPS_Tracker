@@ -89,21 +89,21 @@ def get_schedule(request):
             from_location = request.data['from_location']
             to_location = request.data['to_location']
 
-            current_time = datetime.datetime.now().time()
+            current_time = (datetime.datetime.now() + datetime.timedelta(hours=5, minutes=30)).time()
+            print(current_time)
+            print(bus_id, day_id, from_location, to_location)
             schedules = Schedule.objects.filter(
                 bus_id=bus_id,
                 day_id=day_id,
                 from_location=from_location,
                 to_location=to_location,
                 start_time__gte=current_time
-            ).order_by('start_time').first()
+            ).order_by("start_time").first()
 
-            serializer = ScheduleSerializer(schedules) if schedules else None
-            if serializer:
-                return Response({'action': 'Get Schedule', 'data': serializer.data}, status=status.HTTP_200_OK)
-            else:
+            if schedules is None:
                 return Response({'error': 'No upcoming schedule found'}, status=status.HTTP_404_NOT_FOUND)
+
+            serializer = ScheduleSerializer([schedules], many=True)  # Wrap single object in a list
+            return Response({'action': 'Get Schedule', 'data': serializer.data}, status=status.HTTP_200_OK)
         except KeyError:
             return Response({'error': 'Invalid request data'}, status=status.HTTP_400_BAD_REQUEST)
-
-

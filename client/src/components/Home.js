@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 import {
   Typography,
   FormControl,
@@ -34,11 +37,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Home = () => {
+const API_END_POINT = process.env.API_END_POINT || "http://localhost:8000/";
+
+const Home = ({ data, setData }) => {
   const classes = useStyles();
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -47,13 +53,36 @@ const Home = () => {
       return;
     }
 
-    // Here you can place your API call logic
-    try {
-      // API call logic
-    } catch (error) {
-      console.error("Error fetching data:", error);
+    if (!from || !to) {
+      setError("From and To are required");
+      return;
     }
+
+    const data = {
+      bus_id: 2,
+      day_id: 1,
+      from_location: from,
+      to_location: to,
+    };
+
+    const url = `${API_END_POINT}apis/get_schedule/`;
+    console.log("url:", url);
+    axios
+      .post(url, data)
+      .then((response) => {
+        console.log("Response:", response.data);
+        setData(response.data.data[0]);
+        navigate("/map");
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error.response.data.error);
+        toast.error(error.response.data.error);
+      });
   };
+
+  const fromOptions = ["clt", "bhoopali", "hostel pc"];
+
+  const toOptions = ["clt", "bhoopali", "hostel pc"];
 
   return (
     <div className={classes.root}>
@@ -74,9 +103,11 @@ const Home = () => {
                 <MenuItem value="">
                   <em>None</em>
                 </MenuItem>
-                <MenuItem value="clt">CLT</MenuItem>
-                <MenuItem value="bhooopali">Bhooopali</MenuItem>
-                <MenuItem value="hostel pc">Hostel PC</MenuItem>
+                {fromOptions.map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
           </Grid>
@@ -94,9 +125,11 @@ const Home = () => {
                 <MenuItem value="">
                   <em>None</em>
                 </MenuItem>
-                <MenuItem value="clt">CLT</MenuItem>
-                <MenuItem value="bhooopali">Bhooopali</MenuItem>
-                <MenuItem value="hostel pc">Hostel PC</MenuItem>
+                {toOptions.map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
           </Grid>
