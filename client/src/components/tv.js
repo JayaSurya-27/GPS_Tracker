@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
+import axios from "axios";
 import busIconUrl from "./../static/gps.png";
 
 const containerStyle = {
@@ -20,7 +21,7 @@ const defaultCenter = {
 
 const API_END_POINT = process.env.REACT_APP_API_KEY;
 
-const MapComponent = ({ data }) => {
+const Tv = ({ data }) => {
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
   });
@@ -28,6 +29,7 @@ const MapComponent = ({ data }) => {
   const mapRef = useRef(null);
   const [busPosition, setBusPosition] = useState(null);
   const [latestTimestamp, setLatestTimestamp] = useState(null);
+  const [schedule, setSchedule] = useState(null);
 
   const fetchData = async () => {
     try {
@@ -58,11 +60,40 @@ const MapComponent = ({ data }) => {
     }
   };
 
+  const fetchSchedule = async () => {
+    try {
+      const response = await axios.post(
+        "https://gps-tracker-hr6r.onrender.com/apis/get_schedule/",
+        {
+          bus_id: 2,
+          day_id: 1,
+          from_location: "clt",
+          to_location: "bhoopali",
+        }
+      );
+
+      console.log("Schedule response:", response);
+      if (response.status === 200) {
+        setSchedule(response.data.data[0]);
+      } else {
+        console.error("Error fetching schedule");
+      }
+    } catch (error) {
+      console.error("Error fetching schedule:", error);
+    }
+  };
+
   useEffect(() => {
     fetchData();
+    fetchSchedule(); // Initial schedule fetch
 
     const fetchDataInterval = setInterval(fetchData, 5000);
-    return () => clearInterval(fetchDataInterval);
+    const fetchScheduleInterval = setInterval(fetchSchedule, 20 * 60 * 1000); // Fetch schedule every 20 minutes
+
+    return () => {
+      clearInterval(fetchDataInterval);
+      clearInterval(fetchScheduleInterval);
+    };
   }, []);
 
   useEffect(() => {
@@ -83,17 +114,29 @@ const MapComponent = ({ data }) => {
           zIndex: 1000,
           display: "flex",
           flexDirection: "column",
+          backgroundColor: "rgba(130, 146, 250, 0.8)",
         }}
       >
-        <Typography variant="body1">
-          Bus Position (Last Updated: {latestTimestamp})
+        <Typography
+          variant="h5"
+          style={{ textAlign: "center", marginBottom: "8px" }}
+        >
+          <span style={{ fontSize: "1.5em" }}>CLT</span> -{" "}
+          <span style={{ fontSize: "1.5em" }}>Bhoopali</span>
         </Typography>
-        <Typography variant="body2">
-          From: {data?.from_location} - To: {data?.to_location}
-        </Typography>
-        <Typography variant="body2">
-          Start Time: {data?.start_time} - End Time: {data?.end_time}
-        </Typography>
+        {schedule && (
+          <>
+            <Typography variant="body2" style={{ textAlign: "center" }}>
+              <span style={{ fontWeight: "bold" }}>Start Time:</span>{" "}
+              {schedule.start_time} -{" "}
+              <span style={{ fontWeight: "bold" }}>End Time:</span>{" "}
+              {schedule.end_time}
+            </Typography>
+            <Typography variant="body1" style={{ textAlign: "center" }}>
+              Bus Position (Last Updated: {latestTimestamp})
+            </Typography>
+          </>
+        )}
       </Paper>
       <GoogleMap
         mapContainerStyle={containerStyle}
@@ -117,4 +160,4 @@ const MapComponent = ({ data }) => {
   );
 };
 
-export default MapComponent;
+export default Tv;
