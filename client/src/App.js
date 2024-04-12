@@ -6,6 +6,7 @@ import Home from "./components/Home.js";
 import MapComponent from "./components/noSocket.js";
 import "react-toastify/dist/ReactToastify.css";
 
+
 function App() {
   const [data, setData] = useState();
   return (

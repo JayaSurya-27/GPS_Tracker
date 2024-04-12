@@ -5,8 +5,12 @@ import Typography from "@mui/material/Typography";
 import busIconUrl from "./../static/gps.png";
 
 const containerStyle = {
+  position: "fixed",
+  top: 0,
+  left: 0,
   width: "100vw",
-  height: "100vh",
+  height: "90vh",
+  overflow: "hidden",
 };
 
 const defaultCenter = {
@@ -14,7 +18,7 @@ const defaultCenter = {
   lng: 74.939076,
 };
 
-const API_ENDPOINT = "http://localhost:8000/apis/bus_location/2/";
+const API_END_POINT = process.env.REACT_APP_API_KEY;
 
 const MapComponent = ({ data }) => {
   const { isLoaded, loadError } = useLoadScript({
@@ -26,19 +30,21 @@ const MapComponent = ({ data }) => {
 
   const fetchData = async () => {
     try {
-      const response = await fetch(API_ENDPOINT);
-      if (!response.ok) {
-        throw new Error("Failed to fetch data");
+      const response = await fetch(`${API_END_POINT}/apis/bus_location/2/`);
+
+      console.log("Response:", response);
+      if (response.status !== 200) {
+        console.error("Invalid response status:", response.status);
+        return;
       }
+
       const data = await response.json();
       console.log("Data fetched:", data);
 
-      // Ensure that latitude and longitude are valid numbers
       const newLat = parseFloat(data.data.latitude);
       const newLng = parseFloat(data.data.longitude);
 
       if (!isNaN(newLat) && !isNaN(newLng)) {
-        // Update busPosition only if coordinates are valid
         setBusPosition({ lat: newLat, lng: newLng });
       } else {
         console.error("Invalid latitude or longitude received:", data);
@@ -49,33 +55,33 @@ const MapComponent = ({ data }) => {
   };
 
   useEffect(() => {
-    // Fetch data initially
-    fetchData();
+    fetchData(); // Fetch data initially
 
-    // Setup interval to fetch data every 5 seconds
     const fetchDataInterval = setInterval(fetchData, 5000);
-
-    // Cleanup interval on component unmount
     return () => clearInterval(fetchDataInterval);
-  }, []); // Only run once on component mount
+  }, []);
 
   useEffect(() => {
-    // Pan map to bus position when it updates
     if (mapRef.current && busPosition) {
       mapRef.current.panTo(busPosition);
     }
-  }, [busPosition]); // Trigger when busPosition changes
+  }, [busPosition]);
 
   if (loadError) return <div>Error loading maps</div>;
   if (!isLoaded) return <div>Loading Maps</div>;
-  console.log(data);
+
   return (
-    <>
-      <div>
-        <Paper elevation={3} style={{ padding: "10px", marginBottom: "20px" }}>
-          <Typography variant="body1">Bus Position</Typography>
-        </Paper>
-      </div>
+    <div style={{ position: "relative", width: "100%", height: "100%" }}>
+      <Paper
+        elevation={3}
+        style={{
+          padding: "0px",
+          height: "6vh",
+          zIndex: 1000,
+        }}
+      >
+        <Typography variant="body1">Bus Position</Typography>
+      </Paper>
       <GoogleMap
         mapContainerStyle={containerStyle}
         center={defaultCenter}
@@ -84,7 +90,6 @@ const MapComponent = ({ data }) => {
           mapRef.current = map;
         }}
       >
-        {/* Render Marker if busPosition is valid */}
         {busPosition && (
           <Marker
             position={busPosition}
@@ -95,7 +100,7 @@ const MapComponent = ({ data }) => {
           />
         )}
       </GoogleMap>
-    </>
+    </div>
   );
 };
 
