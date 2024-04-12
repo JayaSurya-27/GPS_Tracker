@@ -37,7 +37,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const API_END_POINT = process.env.API_END_POINT || "http://localhost:8000/";
+const API_END_POINT =
+  "https://gps-tracker-hr6r.onrender.com/apis/get_schedule/";
 
 const Home = ({ data, setData }) => {
   const classes = useStyles();
