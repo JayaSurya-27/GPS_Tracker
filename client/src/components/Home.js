@@ -66,7 +66,7 @@ const Home = ({ data, setData }) => {
       to_location: to,
     };
 
-    const url = `${API_END_POINT}apis/get_schedule/`;
+    const url = `${API_END_POINT}`;
     console.log("url:", url);
     axios
       .post(url, data)
