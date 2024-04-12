@@ -83,18 +83,47 @@ const MapComponent = ({ data }) => {
           zIndex: 1000,
           display: "flex",
           flexDirection: "column",
+          alignItems: "center",
+          backgroundColor: "#f6f7b5",
+          borderRadius: "8px",
+          margin: "auto",
         }}
       >
-        <Typography variant="body1">
+        <Typography
+          variant="body1"
+          style={{
+            textAlign: "center",
+            marginBottom: "8px",
+            fontSize: "1.2em", // Larger font size
+            fontWeight: "bold", // Bold text
+            width: "100%", // Ensure text occupies full width
+            boxSizing: "border-box", // Include padding in width calculation
+            padding: "0 8px", // Add padding for spacing
+          }}
+        >
           Bus Position (Last Updated: {latestTimestamp})
         </Typography>
-        <Typography variant="body2">
+        <Typography
+          variant="body2"
+          style={{
+            textAlign: "center",
+            marginBottom: "8px",
+            fontSize: "1em", // Slightly larger font size
+          }}
+        >
           From: {data?.from_location} - To: {data?.to_location}
         </Typography>
-        <Typography variant="body2">
+        <Typography
+          variant="body2"
+          style={{
+            textAlign: "center",
+            fontSize: "1em", // Slightly larger font size
+          }}
+        >
           Start Time: {data?.start_time} - End Time: {data?.end_time}
         </Typography>
       </Paper>
+
       <GoogleMap
         mapContainerStyle={containerStyle}
         center={defaultCenter}
