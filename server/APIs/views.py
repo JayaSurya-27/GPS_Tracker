@@ -16,7 +16,6 @@ from asgiref.sync import async_to_sync
 def get_latest_bus_location(request, bus_id):
     if request.method == 'GET':
         try:
-            print(bus_id)
             latest_location = get_object_or_404(BusLocation.objects.filter(bus_id=bus_id).order_by('-timestamp')[:1])
             serializer = BusLocationSerializer(latest_location)
             return Response({'action': 'Get Latest Bus Location', 'data': serializer.data}, status=status.HTTP_200_OK)
