@@ -18,7 +18,7 @@ SECRET_KEY = 'django-insecure-e#s*oe6q)x1&)tm*fc0g9qciy6dnqpszp3yq2rd9@1*p@e^l$p
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost','.vercel.app','.now.sh','gps-tracker-hr6r.onrender.com']
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
