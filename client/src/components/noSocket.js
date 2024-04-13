@@ -90,44 +90,84 @@ const MapComponent = ({ data }) => {
         }}
       >
         <Typography
+          variant="h6" // Use 'h6' variant for larger, bold heading
+          style={{
+            textAlign: "center",
+            marginBottom: "8px",
+            fontWeight: "bold", // Bold text
+          }}
+        >
+          IITDH Shuttle Tracker
+        </Typography>
+
+        <Typography
           variant="body1"
           style={{
             textAlign: "center",
             marginBottom: "8px",
             fontSize: "1.2em", // Larger font size
             fontWeight: "bold", // Bold text
-            width: "100%", // Ensure text occupies full width
-            boxSizing: "border-box", // Include padding in width calculation
-            padding: "0 8px", // Add padding for spacing
           }}
         >
-          Bus Position (Last Updated: {latestTimestamp})
+          <span style={{ fontWeight: "normal" }}>
+            Next Trip:{" "}
+            <span style={{ fontSize: "1.2em" }}>{data?.start_time}</span>
+          </span>
         </Typography>
+
         <Typography
-          variant="body2"
+          variant="body1"
           style={{
             textAlign: "center",
             marginBottom: "8px",
-            fontSize: "1em", // Slightly larger font size
+            fontWeight: "bold", // Bold text
           }}
         >
-          From: {data?.from_location} - To: {data?.to_location}
+          <span style={{ fontWeight: "normal" }}>From:</span>{" "}
+          {data?.from_location.toUpperCase()}
         </Typography>
+
+        <Typography
+          variant="body1"
+          style={{
+            textAlign: "center",
+            marginBottom: "8px",
+            fontWeight: "bold", // Bold text
+          }}
+        >
+          <span style={{ fontWeight: "normal" }}>To:</span>{" "}
+          {data?.to_location.charAt(0).toUpperCase() +
+            data?.to_location.slice(1)}
+        </Typography>
+
         <Typography
           variant="body2"
           style={{
             textAlign: "center",
-            fontSize: "1em", // Slightly larger font size
+            fontSize: "0.9em", // Smaller font size for last updated
+            fontWeight: "lighter", // Lighter font weight for last updated
           }}
         >
-          Start Time: {data?.start_time} - End Time: {data?.end_time}
+          Last Updated: {latestTimestamp}
+        </Typography>
+
+        <Typography
+          variant="body2"
+          style={{
+            textAlign: "center",
+            marginTop: "8px", // Add spacing above this line
+            fontSize: "1em", // Standard font size
+            fontWeight: "lighter", // Lighter font weight for end time
+          }}
+        >
+          End Time: {data?.end_time}
         </Typography>
       </Paper>
 
       <GoogleMap
         mapContainerStyle={containerStyle}
         center={defaultCenter}
-        zoom={17}
+        zoom={16}
         onLoad={(map) => {
           mapRef.current = map;
         }}

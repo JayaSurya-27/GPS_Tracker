@@ -97,7 +97,7 @@ const WebSocketComponent = ({ data, setData }) => {
       <GoogleMap
         mapContainerStyle={containerStyle}
         center={defaultCenter}
-        zoom={17}
+        zoom={16}
         onLoad={(map) => {
           mapRef.current = map;
         }}

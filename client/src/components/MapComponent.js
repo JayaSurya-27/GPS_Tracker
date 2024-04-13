@@ -38,7 +38,7 @@ const MapComponent = ({ busPosition }) => {
     <GoogleMap
       mapContainerStyle={containerStyle}
       center={center}
-      zoom={17}
+      zoom={16}
       onLoad={(map) => {
         mapRef.current = map;
       }}
